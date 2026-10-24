@@ -1,0 +1,58 @@
+#khai báo thư viện
+import numpy as np
+import matplotlib.pyplot as plt
+import tensorflow as tf
+from tensorflow.keras.layers import Dense, Input
+from tensorflow.keras import Sequential
+from tensorflow.keras.losses import MeanSquaredError, BinaryCrossentropy
+from tensorflow.keras.activations import sigmoid
+from lab_utils_common import dlc
+from lab_neurons_utils import plt_prob_1d, sigmoidnp, plt_linear, plt_logistic
+plt.style.use('./deeplearning.mplstyle')
+import logging
+logging.getLogger("tensorflow").setLevel(logging.ERROR)
+tf.autograph.set_verbosity(0)
+
+#khởi tạo dữ liệu và lớp tuyến tính
+X_train = np.array([[1.0], [2.0]], dtype=np.float32)           #(size in 1000 square feet)
+Y_train = np.array([[300.0], [500.0]], dtype=np.float32)       #(price in 1000s of dollars)
+
+linear_layer = tf.keras.layers.Dense(units=1, activation = 'linear')
+
+#Gán giá trị
+set_w = np.array([[200]])
+set_b = np.array([100])
+
+# set_weights nhận một danh sách các mảng numpy
+linear_layer.set_weights([set_w, set_b])
+print(linear_layer.get_weights())
+
+#thực hiện dự đoán và so sánh numpy
+a1 = linear_layer(X_train[0].reshape(1,1))
+print(a1)
+alin = np.dot(set_w, X_train[0].reshape(1,1)) + set_b
+print(alin)
+
+# ====PHẦN HỒI QUY LOGICTIC====
+#khởi tạo dữ liệu
+X_train = np.array([0., 1, 2, 3, 4, 5], dtype=np.float32).reshape(-1,1)  # Mảng 2 chiều
+Y_train = np.array([0,  0, 0, 1, 1, 1], dtype=np.float32).reshape(-1,1)  # Mảng 2 chiều
+
+#Xây dựng mô hình Sequential chứa lớp Logistic:
+model = Sequential(
+    [
+        tf.keras.layers.Dense(1, input_dim=1,  activation = 'sigmoid', name='L1')
+    ]
+)
+
+#Lấy lớp, gán trọng số và kiểm tra đầu ra:
+logistic_layer = model.get_layer('L1')
+
+set_w = np.array([[2]])
+set_b = np.array([-4.5])
+logistic_layer.set_weights([set_w, set_b])
+
+a1 = model.predict(X_train[0].reshape(1,1))
+print(a1)
+alog = sigmoidnp(np.dot(set_w, X_train[0].reshape(1,1)) + set_b)
+print(alog)
